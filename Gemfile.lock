@@ -411,7 +411,7 @@ DEPENDENCIES
   jbuilder
   kamal
   pagy (~> 6.2)
-  pg
+  pg (~> 1.6.0)
   propshaft
   puma (>= 5.0)
   rails (~> 8.0.3)

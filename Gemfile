@@ -12,7 +12,7 @@ end
 
 group :production do
   # Use postgresql as the database for Active Record in production
-  gem "pg"
+  gem "pg", "~> 1.6.0"
 end
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"

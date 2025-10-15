@@ -1,0 +1,15 @@
+<% content_for :title, "New task" %>
+
+<div class="max-w-2xl mx-auto">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Create New Task</h1>
+    <p class="mt-2 text-sm text-gray-700">Add a new task to your todo list</p>
+  </div>
+
+  <%= render "form", task: @task %>
+
+  <div class="mt-6">
+    <%= link_to "← Back to tasks", tasks_path, 
+        class: "text-blue-600 hover:text-blue-500 font-medium" %>
+  </div>
+</div>

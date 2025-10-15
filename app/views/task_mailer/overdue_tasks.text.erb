@@ -1,0 +1,24 @@
+⚠️ OVERDUE TASKS ALERT
+========================
+
+Hello <%= @user.email.split('@').first.capitalize %>!
+
+ACTION REQUIRED: You have <%= @overdue_tasks.count %> <%= 'task'.pluralize(@overdue_tasks.count) %> that are past their due date.
+
+<% if @overdue_tasks.any? %>
+OVERDUE TASKS
+<% @overdue_tasks.each_with_index do |task, index| %>
+<%= index + 1 %>. <%= task.title %> - OVERDUE <%= time_ago_in_words(task.due_date) %> ago
+   <%= task.description if task.description.present? %>
+   Was due: <%= task.due_date.strftime("%B %d, %Y at %I:%M %p") %>
+   <% if task.priority %>Priority: <%= task.priority.capitalize %><% end %>
+   <% if task.category %>Category: <%= task.category.name %><% end %>
+   <% if task.has_subtasks? %>Subtasks: <%= task.completed_subtasks_count %>/<%= task.subtasks_count %> completed<% end %>
+
+<% end %>
+<% end %>
+
+Don't let overdue tasks pile up! Complete them now: <%= root_url %>
+
+Stay on track!
+Todo App Team

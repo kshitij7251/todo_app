@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tasks Due Today</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f9fafb; }
+    .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .header { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center; }
+    .content { padding: 30px; }
+    .reminder { background: #fef3c7; border: 1px solid #fbbf24; border-radius: 6px; padding: 16px; margin: 20px 0; }
+    .task-list { margin: 20px 0; }
+    .task-item { padding: 16px; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 12px; background: #f9fafb; border-left: 4px solid #f59e0b; }
+    .task-title { font-weight: 600; color: #111827; font-size: 16px; }
+    .task-description { color: #6b7280; margin: 8px 0; }
+    .task-meta { font-size: 12px; color: #6b7280; margin-top: 8px; }
+    .due-badge { background: #f59e0b; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .priority-high { border-left-color: #ef4444; }
+    .priority-medium { border-left-color: #f59e0b; }
+    .priority-low { border-left-color: #10b981; }
+    .cta-button { display: inline-block; background: #f59e0b; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+    .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
+    .subtasks { margin-top: 12px; padding-left: 16px; }
+    .subtask { font-size: 14px; color: #6b7280; margin: 4px 0; }
+    .time-info { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 12px; margin: 16px 0; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📅 Today's Tasks</h1>
+      <p>Good <%= Date.current.strftime("%A") %>, <%= @user.email.split('@').first.capitalize %>!</p>
+    </div>
+    
+    <div class="content">
+      <div class="reminder">
+        <strong>🎯 Daily Focus:</strong> You have <%= @due_today_tasks.count %> 
+        <%= 'task'.pluralize(@due_today_tasks.count) %> due today. Let's make it a productive day!
+      </div>
+
+      <div class="time-info">
+        📅 <%= Date.current.strftime("%B %d, %Y") %>
+      </div>
+
+      <% if @due_today_tasks.any? %>
+        <h3>✅ Tasks Due Today</h3>
+        <div class="task-list">
+          <% @due_today_tasks.order(:priority, :due_date).each do |task| %>
+            <div class="task-item priority-<%= task.priority || 'medium' %>">
+              <div class="task-title">
+                <%= task.title %>
+                <span class="due-badge">
+                  DUE TODAY
+                </span>
+              </div>
+              
+              <% if task.description.present? %>
+                <div class="task-description"><%= task.description %></div>
+              <% end %>
+              
+              <div class="task-meta">
+                🕐 Due: <%= task.due_date.strftime("%I:%M %p") %>
+                <% if task.priority %>
+                  • 🔥 Priority: <%= task.priority.capitalize %>
+                <% end %>
+                <% if task.category %>
+                  • 📁 <%= task.category.name %>
+                <% end %>
+              </div>
+
+              <% if task.has_subtasks? %>
+                <div class="subtasks">
+                  <strong>Subtasks (<%= task.completed_subtasks_count %>/<%= task.subtasks_count %> completed):</strong>
+                  <% task.subtasks.pending.limit(3).each do |subtask| %>
+                    <div class="subtask">• <%= subtask.title %></div>
+                  <% end %>
+                  <% if task.subtasks.pending.count > 3 %>
+                    <div class="subtask">... and <%= task.subtasks.pending.count - 3 %> more</div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <div style="text-align: center;">
+          <a href="<%= root_url %>" class="cta-button">Start Your Day</a>
+        </div>
+      <% else %>
+        <div style="text-align: center; padding: 40px;">
+          <h3>🎉 No tasks due today!</h3>
+          <p>You're all caught up. Why not plan ahead for tomorrow?</p>
+          <a href="<%= root_url %>" class="cta-button">Add New Tasks</a>
+        </div>
+      <% end %>
+    </div>
+    
+    <div class="footer">
+      <p>Make today count! Every completed task is a step closer to your goals.</p>
+      <p>Todo App • Daily Reminder</p>
+    </div>
+  </div>
+</body>
+</html>ask#due_today_tasks</h1>
+
+<p>
+  <%= @greeting %>, find me in app/views/task_mailer/due_today_tasks.html.erb
+</p>

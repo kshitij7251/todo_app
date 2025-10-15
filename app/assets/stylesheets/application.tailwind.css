@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark mode transition */
+.dark {
+  color-scheme: dark;
+}
+
+/* Dark mode styles for form inputs */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark textarea,
+.dark select {
+  @apply bg-gray-700 border-gray-600 text-white;
+}
+
+.dark input[type="text"]:focus,
+.dark input[type="email"]:focus,
+.dark input[type="password"]:focus,
+.dark textarea:focus,
+.dark select:focus {
+  @apply border-blue-500 ring-blue-500;
+}
+
+/* Dark mode styles for buttons */
+.dark .btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white;
+}
+
+.dark .btn-secondary {
+  @apply bg-gray-600 hover:bg-gray-700 text-white;
+}
+
+/* Dark mode styles for links */
+.dark a {
+  @apply text-blue-400 hover:text-blue-300;
+}
+
+/* Dark mode styles for cards and panels */
+.dark .card {
+  @apply bg-gray-800 border-gray-700;
+}
+
+/* Dark mode styles for task items */
+.dark .task-item {
+  @apply bg-gray-800 hover:bg-gray-700 border-gray-700;
+}
+
+/* Dark mode styles for category badges */
+.dark .category-badge {
+  @apply bg-opacity-20 text-opacity-90;
+}

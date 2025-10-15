@@ -1,0 +1,39 @@
+DAILY DIGEST - <%= Date.current.strftime("%B %d, %Y") %>
+===============================================
+
+Hello <%= @user.email.split('@').first.capitalize %>!
+
+Here's your daily task summary:
+
+TASK OVERVIEW
+- Total tasks: <%= @user.tasks.count %>
+- Pending tasks: <%= @pending_tasks.count %>
+- Completed tasks: <%= @user.tasks.completed.count %>
+- Overdue tasks: <%= @overdue_tasks.count %>
+
+<% if @pending_tasks.any? %>
+PENDING TASKS (<%= @pending_tasks.count %>)
+<% @pending_tasks.each_with_index do |task, index| %>
+<%= index + 1 %>. <%= task.title %>
+   <%= task.description if task.description.present? %>
+   <% if task.due_date %>Due: <%= task.due_date.strftime("%B %d, %Y at %I:%M %p") %><% end %>
+   <% if task.priority %>Priority: <%= task.priority.capitalize %><% end %>
+   <% if task.category %>Category: <%= task.category.name %><% end %>
+
+<% end %>
+<% end %>
+
+<% if @overdue_tasks.any? %>
+OVERDUE TASKS (<%= @overdue_tasks.count %>)
+<% @overdue_tasks.each_with_index do |task, index| %>
+<%= index + 1 %>. <%= task.title %> (Overdue <%= time_ago_in_words(task.due_date) %> ago)
+   <%= task.description if task.description.present? %>
+   Was due: <%= task.due_date.strftime("%B %d, %Y at %I:%M %p") %>
+
+<% end %>
+<% end %>
+
+Visit your Todo App: <%= root_url %>
+
+Stay productive!
+Todo App Team

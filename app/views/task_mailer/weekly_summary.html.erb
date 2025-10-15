@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weekly Productivity Summary</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f9fafb; }
+    .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .header { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center; }
+    .content { padding: 30px; }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+    .stat-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 20px; text-align: center; }
+    .stat-number { font-size: 32px; font-weight: bold; color: #8b5cf6; margin-bottom: 8px; }
+    .stat-label { font-size: 14px; color: #6b7280; }
+    .section { margin: 30px 0; }
+    .section-title { font-size: 18px; font-weight: 600; color: #111827; margin-bottom: 16px; border-bottom: 2px solid #8b5cf6; padding-bottom: 8px; }
+    .task-item { padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 8px; background: #f9fafb; }
+    .task-title { font-weight: 600; color: #111827; }
+    .task-meta { font-size: 12px; color: #6b7280; margin-top: 4px; }
+    .progress-bar { background: #e5e7eb; border-radius: 10px; height: 8px; margin: 16px 0; }
+    .progress-fill { background: #8b5cf6; height: 100%; border-radius: 10px; transition: width 0.3s ease; }
+    .achievement { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 16px; margin: 16px 0; }
+    .cta-button { display: inline-block; background: #8b5cf6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+    .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
+    .category-stats { margin: 16px 0; }
+    .category-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📊 Weekly Summary</h1>
+      <p>Your productivity report for <%= (@week_start.strftime("%b %d") + " - " + @week_end.strftime("%b %d, %Y")) %></p>
+    </div>
+    
+    <div class="content">
+      <!-- Overall Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number"><%= @completed_tasks.count %></div>
+          <div class="stat-label">Tasks Completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number"><%= @completion_rate.round %>%</div>
+          <div class="stat-label">Completion Rate</div>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div style="text-align: center; margin: 20px 0;">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: <%= @completion_rate %>%;"></div>
+        </div>
+        <p style="margin: 8px 0; color: #6b7280;">Weekly Progress</p>
+      </div>
+
+      <!-- Achievements -->
+      <% if @completed_tasks.count >= 5 %>
+        <div class="achievement">
+          <strong>🎉 Achievement Unlocked!</strong> You completed <%= @completed_tasks.count %> tasks this week. Great job staying productive!
+        </div>
+      <% end %>
+
+      <!-- Completed Tasks -->
+      <% if @completed_tasks.any? %>
+        <div class="section">
+          <h3 class="section-title">✅ Completed This Week</h3>
+          <% @completed_tasks.limit(5).each do |task| %>
+            <div class="task-item">
+              <div class="task-title"><%= task.title %></div>
+              <div class="task-meta">
+                Completed <%= task.updated_at.strftime("%A, %b %d") %>
+                <% if task.category %>
+                  • 📁 <%= task.category.name %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+          <% if @completed_tasks.count > 5 %>
+            <p style="text-align: center; color: #6b7280; margin-top: 16px;">
+              ... and <%= @completed_tasks.count - 5 %> more completed tasks!
+            </p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- Category Breakdown -->
+      <% if @category_stats.any? %>
+        <div class="section">
+          <h3 class="section-title">📁 Category Breakdown</h3>
+          <div class="category-stats">
+            <% @category_stats.each do |category, count| %>
+              <div class="category-item">
+                <span><%= category || "Uncategorized" %></span>
+                <span><%= count %> tasks</span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Pending Tasks -->
+      <% if @pending_tasks.any? %>
+        <div class="section">
+          <h3 class="section-title">⏳ Still Pending</h3>
+          <% @pending_tasks.limit(3).each do |task| %>
+            <div class="task-item">
+              <div class="task-title"><%= task.title %></div>
+              <div class="task-meta">
+                <% if task.due_date %>
+                  📅 Due: <%= task.due_date.strftime("%B %d, %Y") %>
+                <% end %>
+                <% if task.priority %>
+                  • Priority: <%= task.priority.capitalize %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+          <% if @pending_tasks.count > 3 %>
+            <p style="text-align: center; color: #6b7280; margin-top: 16px;">
+              ... and <%= @pending_tasks.count - 3 %> more pending tasks
+            </p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- Weekly Motivation -->
+      <div style="background: #fef3c7; border: 1px solid #fbbf24; border-radius: 6px; padding: 20px; margin: 20px 0; text-align: center;">
+        <strong>💪 Keep it up!</strong><br>
+        <% if @completion_rate >= 80 %>
+          You had an amazing week with <%= @completion_rate.round %>% completion rate!
+        <% elsif @completion_rate >= 60 %>
+          Solid progress this week! You're building great habits.
+        <% else %>
+          Every week is a fresh start. You've got this!
+        <% end %>
+      </div>
+
+      <div style="text-align: center;">
+        <a href="<%= root_url %>" class="cta-button">Plan Next Week</a>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>Reflect on your progress and plan for success. Every small step counts!</p>
+      <p>Todo App • Weekly Summary</p>
+    </div>
+  </div>
+</body>
+</html>ask#weekly_summary</h1>
+
+<p>
+  <%= @greeting %>, find me in app/views/task_mailer/weekly_summary.html.erb
+</p>

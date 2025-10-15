@@ -1,0 +1,65 @@
+📊 WEEKLY PRODUCTIVITY SUMMARY
+===============================
+
+Week of <%= @week_start.strftime("%b %d") %> - <%= @week_end.strftime("%b %d, %Y") %>
+
+Hello <%= @user.email.split('@').first.capitalize %>!
+
+WEEKLY STATS
+- Tasks Completed: <%= @completed_tasks.count %>
+- Completion Rate: <%= @completion_rate.round %>%
+
+<% if @completed_tasks.count >= 5 %>
+🎉 ACHIEVEMENT UNLOCKED!
+You completed <%= @completed_tasks.count %> tasks this week. Great job staying productive!
+
+<% end %>
+<% if @completed_tasks.any? %>
+COMPLETED THIS WEEK
+<% @completed_tasks.limit(5).each_with_index do |task, index| %>
+<%= index + 1 %>. <%= task.title %>
+   Completed: <%= task.updated_at.strftime("%A, %b %d") %>
+   <% if task.category %>Category: <%= task.category.name %><% end %>
+
+<% end %>
+<% if @completed_tasks.count > 5 %>
+... and <%= @completed_tasks.count - 5 %> more completed tasks!
+
+<% end %>
+<% end %>
+
+<% if @category_stats.any? %>
+CATEGORY BREAKDOWN
+<% @category_stats.each do |category, count| %>
+- <%= category || "Uncategorized" %>: <%= count %> tasks
+<% end %>
+
+<% end %>
+
+<% if @pending_tasks.any? %>
+STILL PENDING
+<% @pending_tasks.limit(3).each_with_index do |task, index| %>
+<%= index + 1 %>. <%= task.title %>
+   <% if task.due_date %>Due: <%= task.due_date.strftime("%B %d, %Y") %><% end %>
+   <% if task.priority %>Priority: <%= task.priority.capitalize %><% end %>
+
+<% end %>
+<% if @pending_tasks.count > 3 %>
+... and <%= @pending_tasks.count - 3 %> more pending tasks
+
+<% end %>
+<% end %>
+
+WEEKLY MOTIVATION
+<% if @completion_rate >= 80 %>
+You had an amazing week with <%= @completion_rate.round %>% completion rate!
+<% elsif @completion_rate >= 60 %>
+Solid progress this week! You're building great habits.
+<% else %>
+Every week is a fresh start. You've got this!
+<% end %>
+
+Plan your next week: <%= root_url %>
+
+Reflect and plan for success!
+Todo App Team

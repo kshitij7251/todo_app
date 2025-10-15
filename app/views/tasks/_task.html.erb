@@ -1,0 +1,155 @@
+<!-- Task Header -->
+<div id="<%= dom_id task %>" class="bg-white dark:bg-gray-800 shadow rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
+    <div class="flex items-center justify-between">
+      <div class="flex-1">
+        <!-- Title and Badges -->
+        <div class="flex items-center space-x-3">
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white <%= 'line-through text-gray-500' if task.completed? %>">
+            <%= task.title %>
+          </h1>
+          
+          <!-- Status Badge -->
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium
+            <%= task.completed? ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
+            <%= task.completed? ? '✅ Completed' : '⏳ Pending' %>
+          </span>
+          
+          <!-- Category Badge -->
+          <% if task.category.present? %>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= task.category.color_classes %>">
+              📁 <%= task.category.name %>
+            </span>
+          <% end %>
+          
+          <!-- Priority Badge -->
+          <% if task.priority.present? %>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+              <%= case task.priority
+                  when 'high' then 'bg-red-100 text-red-800'
+                  when 'medium' then 'bg-yellow-100 text-yellow-800'  
+                  when 'low' then 'bg-green-100 text-green-800'
+                  else 'bg-gray-100 text-gray-800'
+                  end %>">
+              <%= task.priority.capitalize %>
+            </span>
+          <% end %>
+        </div>
+        
+        <!-- Task Description -->
+        <% if task.description.present? %>
+          <div class="mt-4 text-gray-700 dark:text-gray-300 <%= 'line-through text-gray-500' if task.completed? %>">
+            <%= simple_format(task.description) %>
+          </div>
+        <% end %>
+
+        <!-- Attachments Section -->
+        <% if task.attachments.attached? %>
+          <div class="mt-6 border-t border-gray-200 dark:border-gray-700 pt-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Attachments</h3>
+            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <% task.attachments.each do |attachment| %>
+                <div class="relative group bg-gray-50 dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-500 transition-colors">
+                  <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                      <!-- File Icon/Preview -->
+                      <div class="w-10 h-10 flex items-center justify-center bg-gray-100 dark:bg-gray-600 rounded-lg mb-2">
+                        <% if attachment.image? %>
+                          <%= image_tag attachment.representation(resize_to_limit: [100, 100]), class: "rounded" %>
+                        <% else %>
+                          <span class="text-2xl">📄</span>
+                        <% end %>
+                      </div>
+                      
+                      <!-- File Name -->
+                      <p class="text-sm font-medium text-gray-900 dark:text-white truncate" title="<%= attachment.filename %>">
+                        <%= attachment.filename %>
+                      </p>
+                      
+                      <!-- File Size -->
+                      <p class="text-xs text-gray-500 dark:text-gray-400">
+                        <%= number_to_human_size(attachment.byte_size) %>
+                      </p>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="ml-4 flex-shrink-0">
+                      <%= link_to rails_blob_path(attachment, disposition: "attachment"),
+                          class: "text-blue-600 dark:text-blue-400 hover:text-blue-500",
+                          title: "Download" do %>
+                        ⬇️
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Due Date -->
+        <% if task.due_date.present? %>
+          <div class="mt-4 flex items-center space-x-2">
+            <span class="text-sm text-gray-500 dark:text-gray-400">
+              📅 Due: <%= task.due_date.strftime("%B %d, %Y at %I:%M %p") %>
+            </span>
+            <% if task.overdue? %>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                ⚠️ OVERDUE
+              </span>
+            <% elsif task.due_today? %>
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                📅 DUE TODAY
+              </span>
+            <% end %>
+          </div>
+        <% end %>
+
+        <!-- Subtask Progress -->
+        <% if task.has_subtasks? %>
+          <div class="mt-4">
+            <div class="flex items-center space-x-2">
+              <span class="text-sm text-gray-600 dark:text-gray-400">
+                Progress: <%= task.completed_subtasks_count %>/<%= task.subtasks_count %> subtasks completed
+              </span>
+              <span class="text-sm font-medium text-blue-600 dark:text-blue-400">
+                (<%= task.subtasks_completion_percentage %>%)
+              </span>
+              <% if task.has_pending_subtasks? && !task.completed? %>
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800" title="Complete all subtasks before marking this task as done">
+                  ⚠️ Complete all subtasks first
+                </span>
+              <% end %>
+            </div>
+            <div class="mt-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div class="bg-blue-600 h-2 rounded-full" style="width: <%= task.subtasks_completion_percentage %>%"></div>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Actions -->
+        <div class="mt-6 flex items-center space-x-2">
+          <%= button_to (task.completed? ? "Mark as Pending" : "Mark as Completed"),
+              toggle_task_path(task),
+              method: :patch,
+              class: "inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+
+          <%= link_to "Edit Task", edit_task_path(task),
+              class: "inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+
+          <%= button_to "Delete Task", task,
+              method: :delete,
+              data: { turbo_confirm: "Are you sure? This will also delete all subtasks." },
+              class: "inline-flex items-center px-4 py-2 border border-red-300 dark:border-red-700 shadow-sm text-sm font-medium rounded-md text-red-700 dark:text-red-400 bg-white dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <p>
+    <strong>Completed:</strong>
+    <%= task.completed %>
+  </p>
+
+</div>

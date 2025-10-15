@@ -1,0 +1,184 @@
+<% content_for :title, "Dashboard - Todo App" %>
+
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-8">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
+    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Your productivity at a glance</p>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <!-- Total Tasks -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <span class="text-3xl">📊</span>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                Total Tasks
+              </dt>
+              <dd class="flex items-baseline">
+                <div class="text-2xl font-semibold text-gray-900 dark:text-white">
+                  <%= @stats[:total_tasks] %>
+                </div>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Completion Rate -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <span class="text-3xl">✨</span>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                Completion Rate
+              </dt>
+              <dd class="flex items-baseline">
+                <div class="text-2xl font-semibold text-gray-900 dark:text-white">
+                  <%= @stats[:completion_rate] %>%
+                </div>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Due Today -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <span class="text-3xl">📅</span>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                Due Today
+              </dt>
+              <dd class="flex items-baseline">
+                <div class="text-2xl font-semibold text-gray-900 dark:text-white">
+                  <%= @stats[:due_today] %>
+                </div>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overdue Tasks -->
+    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+      <div class="p-5">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <span class="text-3xl">⚠️</span>
+          </div>
+          <div class="ml-5 w-0 flex-1">
+            <dl>
+              <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                Overdue Tasks
+              </dt>
+              <dd class="flex items-baseline">
+                <div class="text-2xl font-semibold text-gray-900 dark:text-white">
+                  <%= @stats[:overdue_tasks] %>
+                </div>
+              </dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Tasks by Category -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+      <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Tasks by Category</h2>
+      <% if @stats[:tasks_by_category].any? %>
+        <div class="space-y-4">
+          <% @stats[:tasks_by_category].each do |category, count| %>
+            <div class="flex items-center">
+              <span class="flex-1 text-sm text-gray-600 dark:text-gray-400"><%= category %></span>
+              <span class="text-sm font-medium text-gray-900 dark:text-white"><%= count %> tasks</span>
+              <div class="ml-2 flex-1">
+                <div class="overflow-hidden h-2 text-xs flex rounded bg-gray-200 dark:bg-gray-700">
+                  <div class="bg-blue-500 rounded" style="width:<%= (count.to_f / @stats[:total_tasks] * 100).round %>%"></div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500 dark:text-gray-400">No categories yet</p>
+      <% end %>
+    </div>
+
+    <!-- Tasks by Priority -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+      <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Tasks by Priority</h2>
+      <div class="space-y-4">
+        <% %w[high medium low].each do |priority| %>
+          <% count = @stats[:tasks_by_priority][priority] || 0 %>
+          <div class="flex items-center">
+            <span class="flex-1 text-sm text-gray-600 dark:text-gray-400 capitalize"><%= priority %></span>
+            <span class="text-sm font-medium text-gray-900 dark:text-white"><%= count %> tasks</span>
+            <div class="ml-2 flex-1">
+              <div class="overflow-hidden h-2 text-xs flex rounded bg-gray-200 dark:bg-gray-700">
+                <div class="rounded <%= priority == 'high' ? 'bg-red-500' : priority == 'medium' ? 'bg-yellow-500' : 'bg-green-500' %>" 
+                     style="width:<%= @stats[:total_tasks].zero? ? 0 : (count.to_f / @stats[:total_tasks] * 100).round %>%">
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Recent Completed Tasks -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+      <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recently Completed</h2>
+      <% if @stats[:recent_completed].any? %>
+        <div class="space-y-3">
+          <% @stats[:recent_completed].each do |task| %>
+            <div class="flex items-center text-sm">
+              <span class="mr-2">✅</span>
+              <span class="flex-1 text-gray-600 dark:text-gray-400"><%= task.title %></span>
+              <span class="text-gray-500 dark:text-gray-400"><%= time_ago_in_words(task.updated_at) %> ago</span>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500 dark:text-gray-400">No completed tasks yet</p>
+      <% end %>
+    </div>
+
+    <!-- Recent Created Tasks -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+      <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recently Created</h2>
+      <% if @stats[:recent_created].any? %>
+        <div class="space-y-3">
+          <% @stats[:recent_created].each do |task| %>
+            <div class="flex items-center text-sm">
+              <span class="mr-2"><%= task.completed? ? "✅" : "⏳" %></span>
+              <span class="flex-1 text-gray-600 dark:text-gray-400"><%= task.title %></span>
+              <span class="text-gray-500 dark:text-gray-400"><%= time_ago_in_words(task.created_at) %> ago</span>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500 dark:text-gray-400">No tasks created yet</p>
+      <% end %>
+    </div>
+  </div>
+</div>

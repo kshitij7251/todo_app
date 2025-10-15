@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daily Task Digest</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f9fafb; }
+    .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .header { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center; }
+    .content { padding: 30px; }
+    .stats { display: flex; justify-content: space-around; margin: 20px 0; }
+    .stat { text-align: center; }
+    .stat-number { font-size: 24px; font-weight: bold; color: #3b82f6; }
+    .stat-label { font-size: 12px; color: #6b7280; text-transform: uppercase; }
+    .task-list { margin: 20px 0; }
+    .task-item { padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 8px; background: #f9fafb; }
+    .task-title { font-weight: 600; color: #111827; }
+    .task-meta { font-size: 12px; color: #6b7280; margin-top: 4px; }
+    .priority-high { border-left: 4px solid #ef4444; }
+    .priority-medium { border-left: 4px solid #f59e0b; }
+    .priority-low { border-left: 4px solid #10b981; }
+    .cta-button { display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+    .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📝 Daily Task Digest</h1>
+      <p>Hello <%= @user.email.split('@').first.capitalize %>! Here's your daily task summary</p>
+    </div>
+    
+    <div class="content">
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-number"><%= @pending_tasks.count %></div>
+          <div class="stat-label">Pending Tasks</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number"><%= @overdue_count %></div>
+          <div class="stat-label">Overdue</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number"><%= @due_today_count %></div>
+          <div class="stat-label">Due Today</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number"><%= @completed_yesterday %></div>
+          <div class="stat-label">Completed Yesterday</div>
+        </div>
+      </div>
+
+      <% if @pending_tasks.any? %>
+        <h3>🎯 Your Pending Tasks</h3>
+        <div class="task-list">
+          <% @pending_tasks.each do |task| %>
+            <div class="task-item <%= "priority-#{task.priority}" if task.priority %>">
+              <div class="task-title"><%= task.title %></div>
+              <div class="task-meta">
+                <% if task.priority %>
+                  <span>Priority: <%= task.priority.capitalize %></span> •
+                <% end %>
+                <% if task.category %>
+                  <span>📁 <%= task.category.name %></span> •
+                <% end %>
+                <% if task.due_date %>
+                  <span>📅 Due: <%= task.due_date.strftime("%b %d, %Y") %></span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div style="text-align: center; padding: 40px;">
+          <h3>🎉 All caught up!</h3>
+          <p>You have no pending tasks. Great job!</p>
+        </div>
+      <% end %>
+
+      <div style="text-align: center;">
+        <a href="<%= root_url %>" class="cta-button">View All Tasks</a>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>You're receiving this because you have notifications enabled.</p>
+      <p>Todo App • Daily Digest</p>
+    </div>
+  </div>
+</body>
+</html>ask#daily_digest</h1>
+
+<p>
+  <%= @greeting %>, find me in app/views/task_mailer/daily_digest.html.erb
+</p>

@@ -1,0 +1,60 @@
+<!-- Page Header -->
+<div class="sm:flex sm:items-center sm:justify-between">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900">Categories</h1>
+    <p class="mt-2 text-sm text-gray-700">Organize your tasks into categories</p>
+  </div>
+  <div class="mt-4 sm:mt-0">
+    <%= link_to "New Category", new_category_path, 
+        class: "inline-flex items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" %>
+  </div>
+</div>
+
+<!-- Categories Grid -->
+<div class="mt-8">
+  <% if @categories.any? %>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <% @categories.each do |category| %>
+        <div class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm hover:border-gray-400 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="flex-shrink-0">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium <%= category.color_classes %>">
+                  📁 <%= category.name %>
+                </span>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2">
+              <%= link_to "Edit", edit_category_path(category),
+                  class: "text-blue-600 hover:text-blue-500 text-sm font-medium" %>
+              <%= link_to "Delete", category,
+                  data: { turbo_method: :delete, turbo_confirm: "Are you sure? This will remove the category from all tasks." },
+                  class: "text-red-600 hover:text-red-500 text-sm font-medium" %>
+            </div>
+          </div>
+          
+          <div class="mt-4">
+            <p class="text-sm text-gray-600">
+              <%= pluralize(category.tasks.count, 'task') %>
+            </p>
+            <% if category.tasks.any? %>
+              <div class="mt-2 text-xs text-gray-500">
+                Recent: <%= category.tasks.order(created_at: :desc).limit(3).pluck(:title).join(', ') %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="text-center py-12">
+      <span class="text-6xl">📁</span>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">No categories yet</h3>
+      <p class="mt-1 text-sm text-gray-500">Get started by creating your first category to organize your tasks.</p>
+      <div class="mt-6">
+        <%= link_to "Create your first category", new_category_path,
+            class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" %>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,32 @@
+📅 TODAY'S TASKS
+================
+
+Good <%= Date.current.strftime("%A") %>, <%= @user.email.split('@').first.capitalize %>!
+
+DAILY FOCUS: You have <%= @due_today_tasks.count %> <%= 'task'.pluralize(@due_today_tasks.count) %> due today.
+
+Date: <%= Date.current.strftime("%B %d, %Y") %>
+
+<% if @due_today_tasks.any? %>
+TASKS DUE TODAY
+<% @due_today_tasks.order(:priority, :due_date).each_with_index do |task, index| %>
+<%= index + 1 %>. <%= task.title %> - DUE TODAY
+   <%= task.description if task.description.present? %>
+   Due: <%= task.due_date.strftime("%I:%M %p") %>
+   <% if task.priority %>Priority: <%= task.priority.capitalize %><% end %>
+   <% if task.category %>Category: <%= task.category.name %><% end %>
+   <% if task.has_subtasks? %>Subtasks: <%= task.completed_subtasks_count %>/<%= task.subtasks_count %> completed<% end %>
+
+<% end %>
+
+Start your productive day: <%= root_url %>
+<% else %>
+🎉 No tasks due today!
+
+You're all caught up. Why not plan ahead for tomorrow?
+
+Add new tasks: <%= root_url %>
+<% end %>
+
+Make today count!
+Todo App Team

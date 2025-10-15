@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Overdue Tasks</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f9fafb; }
+    .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .header { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 30px; border-radius: 8px 8px 0 0; text-align: center; }
+    .content { padding: 30px; }
+    .alert { background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 16px; margin: 20px 0; }
+    .task-list { margin: 20px 0; }
+    .task-item { padding: 16px; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 12px; background: #f9fafb; border-left: 4px solid #ef4444; }
+    .task-title { font-weight: 600; color: #111827; font-size: 16px; }
+    .task-description { color: #6b7280; margin: 8px 0; }
+    .task-meta { font-size: 12px; color: #6b7280; margin-top: 8px; }
+    .overdue-badge { background: #ef4444; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .cta-button { display: inline-block; background: #ef4444; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+    .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 12px; }
+    .subtasks { margin-top: 12px; padding-left: 16px; }
+    .subtask { font-size: 14px; color: #6b7280; margin: 4px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>⚠️ Overdue Tasks Alert</h1>
+      <p>Hello <%= @user.email.split('@').first.capitalize %>! You have tasks that need attention</p>
+    </div>
+    
+    <div class="content">
+      <div class="alert">
+        <strong>⚠️ Action Required:</strong> You have <%= @overdue_tasks.count %> 
+        <%= 'task'.pluralize(@overdue_tasks.count) %> that are past their due date.
+      </div>
+
+      <% if @overdue_tasks.any? %>
+        <h3>🚨 Overdue Tasks</h3>
+        <div class="task-list">
+          <% @overdue_tasks.each do |task| %>
+            <div class="task-item">
+              <div class="task-title">
+                <%= task.title %>
+                <span class="overdue-badge">
+                  OVERDUE <%= time_ago_in_words(task.due_date) %> ago
+                </span>
+              </div>
+              
+              <% if task.description.present? %>
+                <div class="task-description"><%= task.description %></div>
+              <% end %>
+              
+              <div class="task-meta">
+                📅 Was due: <%= task.due_date.strftime("%B %d, %Y at %I:%M %p") %>
+                <% if task.priority %>
+                  • Priority: <%= task.priority.capitalize %>
+                <% end %>
+                <% if task.category %>
+                  • 📁 <%= task.category.name %>
+                <% end %>
+              </div>
+
+              <% if task.has_subtasks? %>
+                <div class="subtasks">
+                  <strong>Subtasks (<%= task.completed_subtasks_count %>/<%= task.subtasks_count %> completed):</strong>
+                  <% task.subtasks.pending.limit(3).each do |subtask| %>
+                    <div class="subtask">• <%= subtask.title %></div>
+                  <% end %>
+                  <% if task.subtasks.pending.count > 3 %>
+                    <div class="subtask">... and <%= task.subtasks.pending.count - 3 %> more</div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <div style="text-align: center;">
+          <a href="<%= root_url %>" class="cta-button">Complete These Tasks</a>
+        </div>
+      <% end %>
+    </div>
+    
+    <div class="footer">
+      <p>Don't let overdue tasks pile up! Stay on top of your goals.</p>
+      <p>Todo App • Overdue Alert</p>
+    </div>
+  </div>
+</body>
+</html>ask#overdue_tasks</h1>
+
+<p>
+  <%= @greeting %>, find me in app/views/task_mailer/overdue_tasks.html.erb
+</p>

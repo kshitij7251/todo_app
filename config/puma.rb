@@ -1,13 +1,21 @@
-# This configuration file will be evaluated by Puma. The top-level methods that
-# are invoked here are part of Puma's configuration DSL. For more information
-# about methods provided by the DSL, see https://puma.io/puma/Puma/DSL.html.
-#
-# Puma starts a configurable number of processes (workers) and each process
-# serves each request in a thread from an internal thread pool.
-#
-# You can control the number of workers using ENV["WEB_CONCURRENCY"]. You
-# should only set this value when you want to run 2 or more workers. The
-# default is already 1.
+# Puma configuration for Render
+
+# Specify the environment
+environment ENV.fetch("RAILS_ENV") { "development" }
+
+# Set the number of threads
+max_threads_count = ENV.fetch("RAILS_MAX_THREADS") { 5 }
+min_threads_count = ENV.fetch("RAILS_MIN_THREADS") { max_threads_count }
+threads min_threads_count, max_threads_count
+
+# Set the port
+port ENV.fetch("PORT") { 3000 }
+
+# Specify the number of workers
+workers ENV.fetch("WEB_CONCURRENCY") { 1 }
+
+# Preload the application
+preload_app!
 #
 # The ideal number of threads per worker depends both on how much time the
 # application spends waiting for IO operations and on how much you wish to

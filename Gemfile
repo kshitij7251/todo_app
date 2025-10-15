@@ -75,4 +75,4 @@ gem "devise", "~> 4.9"
 gem "tailwindcss-rails", "~> 4.3"
 
 # Fast, modern, and lean pagination
-gem "pagy", "~> 6.2"
+gem "pagy", "~> 9.4"

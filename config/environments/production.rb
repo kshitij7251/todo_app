@@ -3,6 +3,9 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Ensures the Rails app won't boot if the master key is missing
+  config.require_master_key = true
+
   # Code is not reloaded between requests.
   config.enable_reloading = false
 

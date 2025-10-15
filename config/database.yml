@@ -27,3 +27,10 @@ production:
   url: <%= ENV['DATABASE_URL'] %>
   encoding: unicode
   pool: 5
+
+  # Action Cable database configuration
+  cable:
+    adapter: postgresql
+    url: <%= ENV['DATABASE_URL'] %>
+    encoding: unicode
+    pool: 5

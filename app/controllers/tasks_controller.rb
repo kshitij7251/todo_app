@@ -4,7 +4,7 @@ class TasksController < ApplicationController
 
   # GET /tasks
   def index
-    @tasks = current_user.tasks
+    @tasks = policy_scope(Task)
     
     # Apply search if present
     @tasks = @tasks.search(params[:search]) if params[:search].present?
@@ -45,19 +45,25 @@ class TasksController < ApplicationController
   end
 
   # GET /tasks/1
-  def show; end
+  def show
+    authorize @task
+  end
 
   # GET /tasks/new
   def new
     @task = current_user.tasks.build
+    authorize @task
   end
 
   # GET /tasks/1/edit
-  def edit; end
+  def edit
+    authorize @task
+  end
 
   # POST /tasks
   def create
     @task = current_user.tasks.build(task_params)
+    authorize @task
     @task.completed = false if @task.completed.nil?
 
     respond_to do |format|
@@ -107,11 +113,13 @@ class TasksController < ApplicationController
   private
 
   def set_task
-    @task = current_user.tasks.find(params[:id])
+    @task = Task.find(params[:id])
   end
 
   # Strong parameters
   def task_params
-    params.require(:task).permit(:title, :description, :priority, :due_date, :completed, :category_id, attachments: [])
+    permitted_params = [:title, :description, :priority, :due_date, :completed, :category_id, attachments: []]
+    permitted_params << :assignee_id if policy(@task || Task).assign?
+    params.require(:task).permit(permitted_params)
   end
 end

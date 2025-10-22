@@ -1,6 +1,7 @@
 class Task < ApplicationRecord
   belongs_to :user, optional: true
   belongs_to :category, optional: true
+  belongs_to :assignee, class_name: 'User', optional: true
   has_many :subtasks, foreign_key: 'parent_task_id', dependent: :destroy
   has_many_attached :attachments
   

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_15_072003) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_22_053933) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -70,6 +70,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_072003) do
     t.datetime "due_date"
     t.integer "user_id"
     t.integer "category_id"
+    t.integer "assignee_id"
+    t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
     t.index ["category_id"], name: "index_tasks_on_category_id"
     t.index ["user_id"], name: "index_tasks_on_user_id"
   end
@@ -87,6 +89,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_072003) do
     t.boolean "due_today_alerts_enabled", default: true
     t.boolean "weekly_summary_enabled", default: true
     t.boolean "dark_mode"
+    t.integer "role"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -98,4 +101,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_072003) do
   add_foreign_key "subtasks", "users"
   add_foreign_key "tasks", "categories"
   add_foreign_key "tasks", "users"
+  add_foreign_key "tasks", "users", column: "assignee_id"
 end
